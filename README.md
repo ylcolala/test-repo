@@ -1,44 +1,77 @@
-Subject: SonarQube Integration Issue – Investigation & Suggested Fixes
+version: '3.8'
 
-Hi [Team/Name],
+services:
 
-I’ve investigated the issue where no archive is shown in the EE portal due to a lack of SonarQube integration. Below are the possible causes and corresponding resolutions:
+  kafka:
+    image: confluentinc/cp-kafka:7.5.3
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"
 
-Problem 1: No Integration with SonarQube
-The EE portal does not display archived data, indicating a potential SonarQube integration issue. Possible reasons and suggested actions include:
+    environment:
 
-SonarQube is Disabled in Bitbucket Server
+      # KRaft mode
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
 
-Fix: Ensure that the SonarQube plugin is installed and enabled in Bitbucket Server.​
+      # Controller quorum
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
 
-Navigate to Bitbucket Server Admin > Manage Add-ons.
+      # Listeners
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
 
-Search for the SonarQube for Bitbucket Server plugin and enable it if it's disabled.
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
 
-No SonarQube Project Created for the Component
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
 
-Fix: Create a corresponding SonarQube project for the component.​
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
 
-In SonarQube, go to Projects > Create Project.
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
 
-Provide the necessary details such as project key and name.
 
-Incorrect Project Key Configured in SonarQube
+      # Single node settings
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-Fix: Verify and update the project key in SonarQube to match the Bitbucket repository.​
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
 
-In SonarQube, navigate to Project Settings > General Settings > DevOps Platform Integration.
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
 
-Ensure that the Project Key and Repository Slug match those of your Bitbucket repository.
 
-No SonarQube Report Due to Pipeline Failure
+      # KRaft cluster id
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
 
-Fix: Investigate the component's pipeline build logs in Bitbucket to identify and resolve any errors that may prevent SonarQube analysis from running successfully.​
 
-Problem 2: No Component Report Data in SonarQube Portal
-Even if integration is set up, no report data is shown for the component in the SonarQube portal.
+    volumes:
+      - kafka-data:/var/lib/kafka/data
 
-Possible Cause: The component’s pipeline may not be triggering a SonarQube scan or report generation.​
 
-Fix: Raise a Change Management Process (CMP) request to enable or fix the component's pipeline and ensure it publishes the SonarQube report properly.​
+  schema-registry:
 
+    image: confluentinc/cp-schema-registry:7.5.3
+    container_name: schema-registry
+
+    depends_on:
+      - kafka
+
+    ports:
+      - "8081:8081"
+
+
+    environment:
+
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+
+
+      # Kafka bootstrap server
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:9092
+
+
+      # For KRaft, no ZooKeeper config needed
+
+
+volumes:
+
+  kafka-data:
