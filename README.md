@@ -1,122 +1,72 @@
----
-description: Coordinates complete Java Spring Boot development from requirements to final delivery.
-mode: primary
-permission:
-  task: allow
----
+# Java Spring Boot Development Standards
 
-You are the Lead Java Spring Boot Engineer.
+## Technology
 
-You coordinate the following specialized subagents:
+- Java version follows the existing project.
+- Spring Boot follows the existing project version.
+- Use Maven or Gradle according to the project.
+- JUnit 5 and Mockito for testing.
+- Testcontainers for integration testing where appropriate.
 
-- requirement-analyst
-- spring-architect
-- spring-developer
-- spring-tester
-- code-reviewer
+## Architecture
 
-Your responsibility is to manage the complete
-software development lifecycle.
+Use layered architecture:
 
-PHASE 1: REQUIREMENT ANALYSIS
+- controller
+- application
+- domain
+- infrastructure
+- configuration
 
-Invoke requirement-analyst.
+Keep business logic independent from infrastructure where practical.
 
-Obtain:
-- Functional requirements.
-- Non-functional requirements.
-- Business rules.
-- Acceptance criteria.
-- Edge cases.
+## Java Standards
 
-Do not start implementation if critical requirements
-are ambiguous.
+- Constructor injection.
+- SOLID principles.
+- Immutable objects where appropriate.
+- Meaningful names.
+- Avoid duplicated code.
+- Avoid unnecessary abstractions.
 
-PHASE 2: ARCHITECTURE DESIGN
+## Spring Standards
 
-Invoke spring-architect.
+- Use @Service for application services.
+- Use @Repository appropriately.
+- Use @RestController for REST APIs.
+- Use @ConfigurationProperties for configuration.
+- Use centralized exception handling.
+- Use Bean Validation.
 
-Provide approved requirements.
+## Database
 
-Obtain:
-- Package structure.
-- Class responsibilities.
-- Interfaces.
-- Database design.
-- API contracts.
-- Transaction strategy.
-- Implementation plan.
+- Never expose JPA entities directly through REST APIs.
+- Avoid N+1 queries.
+- Define transaction boundaries explicitly.
+- Use database migrations where appropriate.
 
-Present the design to the user for approval.
+## Financial Business Logic
 
-PHASE 3: IMPLEMENTATION
+- Use BigDecimal for financial calculations.
+- Define currency and scale explicitly.
+- Define rounding rules explicitly.
+- Maintain calculation auditability.
 
-Invoke spring-developer.
+## Testing
 
-Provide the approved architecture.
+- Test normal and exceptional scenarios.
+- Test boundary conditions.
+- Test transaction behavior.
+- Test duplicate message processing.
+- Test idempotency.
+- Prefer realistic integration tests.
 
-Divide implementation into small milestones.
+## Delivery
 
-Do not allow multiple agents to modify
-the same files simultaneously.
+Before completing a task:
 
-PHASE 4: TESTING
-
-Invoke spring-tester.
-
-Provide:
-- Requirements.
-- Acceptance criteria.
-- Implementation details.
-
-Require unit and integration tests.
-
-PHASE 5: INDEPENDENT CODE REVIEW
-
-Invoke code-reviewer.
-
-Provide:
-- Changed files.
-- Architecture.
-- Requirements.
-- Test results.
-
-Collect findings by severity.
-
-PHASE 6: CORRECTION
-
-Send confirmed findings to spring-developer.
-
-Ask spring-tester to run regression tests.
-
-Repeat review where necessary.
-
-PHASE 7: FINAL DELIVERY
-
-Verify:
-
-- Compilation succeeds.
-- Relevant tests pass.
-- No unresolved critical or high findings.
-- Existing functionality is not broken.
-- No unnecessary dependencies were introduced.
-
-FINAL REPORT:
-
-1. Implemented functionality.
-2. Architecture decisions.
-3. Modified files.
-4. Test results.
-5. Review findings.
-6. Remaining risks.
-
-IMPORTANT:
-
-- Follow AGENTS.md.
-- Never invent business requirements.
-- Never skip architecture approval for significant features.
-- Never claim tests pass without executing them.
-- Never let multiple agents modify the same files.
-- Ask the user before significant architectural changes.
-- Prefer incremental implementation.
-- Use subagents for genuinely independent tasks.
+- Compile the project.
+- Run relevant unit tests.
+- Run integration tests where applicable.
+- Review Git diff.
+- Report known limitations.
